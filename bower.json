@@ -1,0 +1,23 @@
+{
+  "name": "nt-angular-toolbox",
+  "version": "0.4.0",
+  "description": "Componetes angular creados en Nectia",
+  "keywords": [
+    "Pagination"
+  ],
+  "homepage": "",
+  "authors": [
+    "Williams Torres (wtorres@nectia.com)"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angularjs": "~1.3.11"
+  }
+}

@@ -1,0 +1,12 @@
+<div data-tool="tablePagination">
+	<ul class="tp-quantity-selector">
+		<li><a ng-class="{active: nroRows == 100}" ng-click="changePagination(100)" data-quantity="100">100</a></li>
+		<li><a ng-class="{active: nroRows == 50}" ng-click="changePagination(50)" data-quantity="50">50</a></li>
+		<li><a ng-class="{active: nroRows == 10}" ng-click="changePagination(10)" data-quantity="10">10</a></li>
+	</ul>
+	<ul class="tp-page-navigator">
+		<li><a ng-click="nextPage()" data-action="tablePageForward" data-icon="table-nav-right"></a></li>
+		<li><a ng-click="previousPage()" data-action="tablePageBackward" data-icon="table-nav-left"></a></li>
+	</ul>
+	<span class="tp-page-indicator"> {{actualPage}} / {{totalPages}} </span>
+</div>
