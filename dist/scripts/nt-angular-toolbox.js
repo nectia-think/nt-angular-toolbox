@@ -1,4 +1,4 @@
-/*! nt-angular-toolbox - v0.4.0 - 2015-02-13
+/*! nt-angular-toolbox - v0.4.0 - 2015-02-16
 * Copyright (c) 2015 Williams Torres (wtorres@nectia.com); Licensed MIT */
 (function(){
 
@@ -150,8 +150,8 @@ function modalService (){
 
 	this.zIndex = this.configuration.initiaIndex;
 
-	$get.$inject = ['$compile', '$q', '$controller', '$rootScope', 'ntOverlayService'];
-	function $get ($compile, $q, $controller, $rootScope, overlayService){
+	$get.$inject = ['$compile', '$q', '$controller', '$rootScope', 'ntOverlayService', '$injector'];
+	function $get ($compile, $q, $controller, $rootScope, overlayService, $injector){
 
 		function destroyModal (instance){
 			instance.scope.$destroy();
@@ -167,6 +167,7 @@ function modalService (){
 		return {
 
 			open: function(config){
+
 				var modal = angular.element(document.createElement('nt-modal'));
 				modal.append(config.template);
 				overlayService.show(self.zIndex + 1);
@@ -179,10 +180,17 @@ function modalService (){
 			    var instance = new ModalInstance($q, scope, modal, destroyModal);
 				modals.push(instance);
 
-	      		$controller(config.controller, {$scope: scope,  modalInstance: instance.service});
+				var locals = angular.extend({}, config.resolve);
+				
+				angular.forEach(locals, function(value, key) {
+	            	locals[key] = angular.isString(value) ? $injector.get(value) : $injector.invoke(value, null, null, key);
+	            });
 
-			    angular.element(document.body).append(modal);
-			    
+				$q.all(locals).then(function(){
+					$controller(config.controller, angular.extend({'$scope': scope,  'modalInstance': instance.service}, locals));
+				    angular.element(document.body).append(modal);
+				})
+
 			    return instance.getPromise();
 			},
 

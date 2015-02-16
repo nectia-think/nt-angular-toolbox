@@ -117,13 +117,18 @@
 				});
 			}]);
 
-			app.controller('modalController', ['$scope', 'modalInstance', 'ntModalService', function($scope, modalInstance, modalService){
-				console.log('modal creado!');
+			app.controller('modalController', ['$scope', 'modalInstance', 'ntModalService', 'prueba', function($scope, modalInstance, modalService, prueba){
+				console.log('modal creado! '+prueba);
 
 				$scope.accept = function(){
 					modalService.open({
 						controller: 'modalController',
-						template: '<div><button ng-click="accept()">Aceptar</button><button ng-click="cancel()">Cancelar</button></div>'
+						template: '<div><button ng-click="accept()">Aceptar</button><button ng-click="cancel()">Cancelar</button></div>',
+						resolve: {
+							prueba: function(){
+								return 'prueba2';
+							}
+						}
 					});
 				};
 
@@ -143,7 +148,12 @@
 				$scope.openModal = function(){
 					ntModalService.open({
 						controller: 'modalController',
-						template: '<div><button ng-click="accept()">Aceptar</button><button ng-click="cancel()">Cancelar</button></div>'
+						template: '<div><button ng-click="accept()">Aceptar</button><button ng-click="cancel()">Cancelar</button></div>',
+						resolve: {
+							prueba: function(){
+								return "hola";
+							}
+						}
 					}).then(function(message){
 						console.log('Success');
 					}, function(message){
