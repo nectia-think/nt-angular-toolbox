@@ -98,7 +98,29 @@
 				<tfoot>
 					<tr>
 						<td colspan="15">
-							<nt-pagination actual-page="actualPage" total-pages="totalPages" nro-rows="nroRows" load="load()" template-url="static/templates/nt-pagination.template.html" ></nt-pagination>				
+							<nt-pagination actual-page="actualPage" total-pages="totalPages" nro-rows="nroRows" load="load()" ></nt-pagination>				
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+
+			<h2>Paginación Cliente</h2>
+
+			<table cellspacing="0" cellpadding="0" table-data="orderList">
+				<thead>
+					<tr>
+						<td>Campo</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="data in filteredData">
+						<td>{{data}}</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="15">
+							<nt-pagination-client data="totalData" filtered-data="filteredData" ></nt-pagination-client>
 						</td>
 					</tr>
 				</tfoot>
@@ -144,6 +166,8 @@
 				$scope.load = function(){
 					console.log('Cargado datos');
 				};
+
+				$scope.totalData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 				$scope.openModal = function(){
 					ntModalService.open({

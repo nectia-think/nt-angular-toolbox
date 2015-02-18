@@ -30,8 +30,8 @@ function modalService (){
 
 	this.zIndex = this.configuration.initiaIndex;
 
-	$get.$inject = ['$compile', '$q', '$controller', '$rootScope', 'ntOverlayService', '$injector'];
-	function $get ($compile, $q, $controller, $rootScope, overlayService, $injector){
+	$get.$inject = ['$compile', '$q', '$window', '$timeout', '$controller', '$rootScope', 'ntOverlayService', '$injector', '$templateRequest'];
+	function $get ($compile, $q, $window, $timeout, $controller, $rootScope, overlayService, $injector, $templateRequest){
 
 		function destroyModal (instance){
 			instance.scope.$destroy();
@@ -49,15 +49,27 @@ function modalService (){
 			open: function(config){
 
 				var modal = angular.element(document.createElement('nt-modal'));
-				modal.append(config.template);
+				var scope = $rootScope.$new();
+
+				var templatePromise = {};
+
+				function compile(content){
+					modal.append(content);
+					$compile(modal)(scope);
+				}
+
+
+				if (config.templateUrl){
+					templatePromise.template = $templateRequest(config.templateUrl, true).then(compile);
+				}else{
+					compile(config.template);
+				}
+				
 				overlayService.show(self.zIndex + 1);
 				self.zIndex = self.zIndex + 2;
 				modal.css('z-index', self.zIndex);
 
-				var scope = $rootScope.$new();
-			    $compile(modal)(scope);
-
-			    var instance = new ModalInstance($q, scope, modal, destroyModal);
+			    var instance = new ModalInstance($q, $window, $timeout, scope, modal, destroyModal);
 				modals.push(instance);
 
 				var locals = angular.extend({}, config.resolve);
@@ -66,10 +78,10 @@ function modalService (){
 	            	locals[key] = angular.isString(value) ? $injector.get(value) : $injector.invoke(value, null, null, key);
 	            });
 
-				$q.all(locals).then(function(){
+				$q.all(angular.extend({}, locals, templatePromise)).then(function(){
 					$controller(config.controller, angular.extend({'$scope': scope,  'modalInstance': instance.service}, locals));
 				    angular.element(document.body).append(modal);
-				})
+				});
 
 			    return instance.getPromise();
 			},
@@ -86,7 +98,7 @@ function modalService (){
 
 app.provider('ntModalService', modalService);
 
-function ModalInstance ($q, scope, modal, destroyModal){
+function ModalInstance ($q, $window, $timeout, scope, modal, destroyModal){
 	var self = this;
 	var deferred = $q.defer();
 	this.scope = scope;
@@ -100,6 +112,11 @@ function ModalInstance ($q, scope, modal, destroyModal){
 		reject: function(data){
 			destroyModal(self);
 			deferred.reject(data);
+		},
+		updatePosition: function(){
+			$timeout(function(){
+				angular.element($window).triggerHandler('resize');
+			});
 		}
 	};
 
